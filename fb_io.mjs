@@ -21,18 +21,24 @@ import { getDatabase }
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup }
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-import { getAuth, onAuthStateChanged }
+import { onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { signOut}
+    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { ref, set }
+    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 /**************************************************************/
 // EXPORT FUNCTIONS
 // List all the functions called by code or html outside of this module
 /**************************************************************/
 export {
-    fb_initialise, fb_authenticate, fb_onAuthStateChanged
+    fb_test, fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut
 };
 
-
+function fb_test() {
+    console.log("Test")
+}
 /******************************************************/
 // fb_initialise()
 // Called by button initialise
@@ -58,29 +64,89 @@ function fb_initialise() {
     const FB_GAMEDB = getDatabase(FB_GAMEAPP);
     console.info(FB_GAMEDB);
     document.getElementById("p_fbInitialise").innerHTML = "Initialised";
+    console.log("Hello:")
 }
+
 /******************************************************/
 // fb_authenticate()
-// Called by button initialise
-// Initialises the database connection
+// Called by button authenticate
+// uses the google login prompt and creates the popup window which the user can use to select a google account to use.
 // Input:  n/a
 // Return: n/a
 /******************************************************/
 function fb_authenticate() {
+    console.log("working function")
     const AUTH = getAuth();
     const PROVIDER = new GoogleAuthProvider();
+
     // The following makes Google ask the user to select the account
     PROVIDER.setCustomParameters({
         prompt: 'select_account'
     });
+
+    // Create a popup window to sign in
     signInWithPopup(AUTH, PROVIDER).then((result) => {
-    })
-        .catch((error) => {
-        });
-    document.getElementById("p_fbAuthenticate").innerHTML = "Authenticated";
+        //document.getElementById("p_fbAuthenticate").innerHTML = "Authenticated";
+        console.log(result.user.uid);
+        console.log(result.user.email);
+    }).catch((error) => {
+        console.log("error authenticating: " + error);
+       // document.getElementById("p_fbAuthenticate").innerHTML = "Failled Authenticating";
+    });
 }
+
+/******************************************************/
+// fb_onAuthStateChanged()
+// Called by button detect login change
+// Detects if the login was sucessful
+// Input:  n/a
+// Return: n/a
+
+
+
 function fb_onAuthStateChanged() {
-    document.getElementById("p_fbLogin").innerHTML = "Logged in";
+const AUTH = getAuth();
+onAuthStateChanged(AUTH, (user) => {
+   if (user) {
+        document.getElementById("p_fbAuthenticate").innerHTML = "Logged in";
+    } else {
+       document.getElementById("p_fbAuthenticate").innerHTML = "Logged out";
+      }
+    
+}, (error) => {
+    document.getElementById("p_fbAuthenticate").innerHTML = error;
+});
+}
+
+/******************************************************/
+// fb_signOut()
+// Called by button logout
+// The user gets logged out of the firebase
+// Input:  n/a
+// Return: n/a
+/******************************************************/
+function fb_signOut() {
+    console.log("Logging out")
+    const AUTH = getAuth();
+    signOut(AUTH).then(() => {
+        console.log("Logged out")
+    })
+    .catch((error) => {
+        console.log("error:   " + error)
+    });
+}
+function writeRecord() {
+    const dbReference= ref(FB_GAMEDB, where-to-write-to);
+
+    set(dbReference, data-to-write).then(() => {
+
+     //   ✅ Code for a successful write goes here
+
+    }).catch((error) => {
+
+     //   ❌ Code for a write error goes here
+
+    });
 }
 
 

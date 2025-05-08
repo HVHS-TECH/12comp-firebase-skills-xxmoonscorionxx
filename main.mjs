@@ -12,11 +12,13 @@ console.log('%c main.mjs',
 // Import all external constants & functions required
 /**************************************************************/
 // Import all the constants & functions required from fb_io module
-import { fb_initialise, fb_authenticate, fb_onAuthStateChanged }
+import { fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut }
     from './fb_io.mjs';
+
 window.fb_initialise = fb_initialise;
 window.fb_authenticate = fb_authenticate;
-window.fb_authenticate = fb_onAuthStateChanged;
+window.fb_onAuthStateChanged = fb_onAuthStateChanged;
+window.fb_signOut = fb_signOut;
 
 /**************************************************************/
 // index.html main code
