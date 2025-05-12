@@ -10,6 +10,7 @@ const COL_C = 'white';	    // These two const are part of the coloured
 const COL_B = '#CD7F32';	//  console.log for functions scheme
 console.log('%c fb_io.mjs',
     'color: blue; background-color: white;');
+var fb_gamedb;
 
 /**************************************************************/
 // Import all external constants & functions required
@@ -27,13 +28,15 @@ import { signOut}
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { ref, set }
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { get}
+    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 /**************************************************************/
 // EXPORT FUNCTIONS
 // List all the functions called by code or html outside of this module
 /**************************************************************/
 export {
-    fb_test, fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut
+    fb_test, fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut, fb_writeRecord, fb_readRecord, fb_readAll
 };
 
 function fb_test() {
@@ -61,8 +64,8 @@ function fb_initialise() {
     };
     // Initialize Firebase
     const FB_GAMEAPP = initializeApp(firebaseConfig);
-    const FB_GAMEDB = getDatabase(FB_GAMEAPP);
-    console.info(FB_GAMEDB);
+    fb_gamedb= getDatabase(FB_GAMEAPP);
+    console.info(fb_gamedb);
     document.getElementById("p_fbInitialise").innerHTML = "Initialised";
     console.log("Hello:")
 }
@@ -135,16 +138,65 @@ function fb_signOut() {
         console.log("error:   " + error)
     });
 }
-function writeRecord() {
-    const dbReference= ref(FB_GAMEDB, where-to-write-to);
+function fb_writeRecord() {
+    const dbReference= ref(fb_gamedb, "Games/FarLands/Users");
+    set(dbReference, {Name: "bobby", Score: 3}).then(() => {
+        document.getElementById("p_fbWriteRec").innerHTML = "Successful";
 
-    set(dbReference, data-to-write).then(() => {
+    }).catch((error) => {
+        console.log("error:  " + error)
+        document.getElementById("p_fbWriteRec").innerHTML = "Successful";
 
-     //   ✅ Code for a successful write goes here
+    });
+}
+function fb_readRecord() {
+    const dbReference= ref(fb_gamedb, "Games/FarLands/Users/Score");
+
+    get(dbReference).then((snapshot) => {
+        var fb_data = snapshot.val();
+        if (fb_data != null) {
+        document.getElementById("p_fbReadRec").innerHTML = "Successful";
+        console.log("Data: " + fb_data);
+        } else {
+        document.getElementById("p_fbReadRec").innerHTML = "No Record Found";
+        }
+    }).catch((error) => {
+        console.log("error:  " + error );
+    });
+}
+function fb_readAll() {
+    const dbReference= ref(fb_gamedb, "Games/FarLands/Users");
+
+    get(dbReference).then((snapshot) => {
+        var fb_data = snapshot.val();
+
+        if (fb_data != null) {
+            document.getElementById("p_fbReadAll").innerHTML = "successful";
+            console.log(fb_data);
+       //     ✅ Code for a successful read all goes here
+
+        } else {
+            document.getElementById("p_fbReadAll").innerHTML = "No Record Found";
+        //    ✅ Code for no record found goes here
+
+        }
+
+    }).catch((error) => {
+        console.log("error:  " + error);
+      //  ❌ Code for a read all error goes here
+
+    });
+}
+function fb_updateRecord() {
+     const dbReference= ref(fb_gamedb, where-to-write-to);
+
+    update(dbReference, _data).then(() => {
+
+    //    ✅ Code for a successful update goes here
 
     }).catch((error) => {
 
-     //   ❌ Code for a write error goes here
+ //       ❌ Code for a update error goes here
 
     });
 }
