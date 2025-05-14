@@ -8,9 +8,12 @@
 /**************************************************************/
 const COL_C = 'white';	    // These two const are part of the coloured 	
 const COL_B = '#CD7F32';	//  console.log for functions scheme
+
 console.log('%c fb_io.mjs',
     'color: blue; background-color: white;');
 var fb_gamedb;
+var userUID
+
 
 /**************************************************************/
 // Import all external constants & functions required
@@ -30,13 +33,14 @@ import { ref, set }
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import { get}
     from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
+import { update }
+    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 /**************************************************************/
 // EXPORT FUNCTIONS
 // List all the functions called by code or html outside of this module
 /**************************************************************/
 export {
-    fb_test, fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut, fb_writeRecord, fb_readRecord, fb_readAll
+    fb_test, fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut, fb_writeRecord, fb_readRecord, fb_readAll, fb_destroy
 };
 
 function fb_test() {
@@ -52,7 +56,7 @@ function fb_test() {
 function fb_initialise() {
     console.log('%c fb_initialise(): ',
         'color: ' + COL_C + '; background-color: ' + COL_B + ';');
-    const firebaseConfig = {
+        const firebaseConfig = {
         apiKey: "AIzaSyAQ4FYhhhVQvTWxBJstBPqUEM7k1z3HNCs",
         authDomain: "comp-2025-william-kan.firebaseapp.com",
         databaseURL: "https://comp-2025-william-kan-default-rtdb.firebaseio.com",
@@ -62,6 +66,8 @@ function fb_initialise() {
         appId: "1:928584832942:web:caa21627c817d307485a3f",
         measurementId: "G-L6S6H3WPXE"
     };
+    
+
     // Initialize Firebase
     const FB_GAMEAPP = initializeApp(firebaseConfig);
     fb_gamedb= getDatabase(FB_GAMEAPP);
@@ -90,8 +96,13 @@ function fb_authenticate() {
     // Create a popup window to sign in
     signInWithPopup(AUTH, PROVIDER).then((result) => {
         //document.getElementById("p_fbAuthenticate").innerHTML = "Authenticated";
+        
         console.log(result.user.uid);
         console.log(result.user.email);
+        console.log(result.user.displayName);
+        userUID = result.user.uid;
+      //  const userEmail = result.user.email;
+      //  const userName = result.user.displayName;
     }).catch((error) => {
         console.log("error authenticating: " + error);
        // document.getElementById("p_fbAuthenticate").innerHTML = "Failled Authenticating";
@@ -139,7 +150,7 @@ function fb_signOut() {
     });
 }
 function fb_writeRecord() {
-    const dbReference= ref(fb_gamedb, "Games/FarLands/Users");
+    const dbReference= ref(fb_gamedb, "Games/FarLands/${userName}");
     set(dbReference, {Name: "bobby", Score: 3}).then(() => {
         document.getElementById("p_fbWriteRec").innerHTML = "Successful";
 
@@ -198,6 +209,14 @@ function fb_updateRecord() {
 
  //       ❌ Code for a update error goes here
 
+    });
+}
+function fb_destroy() {
+    const dbReference= ref(fb_gamedb, "/");
+    set(dbReference, {greetings: "how are you today"}).then(() => {
+        console.log("ez destroy")
+    }).catch((error) => {
+        console.log("DOESNT WORK" + error)
     });
 }
 
