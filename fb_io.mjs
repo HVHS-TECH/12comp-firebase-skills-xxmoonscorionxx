@@ -12,7 +12,8 @@ const COL_B = '#CD7F32';	//  console.log for functions scheme
 console.log('%c fb_io.mjs',
     'color: blue; background-color: white;');
 var fb_gamedb;
-var userUID
+var userUID;
+var userName;
 
 
 /**************************************************************/
@@ -40,7 +41,7 @@ import { update }
 // List all the functions called by code or html outside of this module
 /**************************************************************/
 export {
-    fb_test, fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut, fb_writeRecord, fb_readRecord, fb_readAll, fb_destroy
+    fb_test, fb_initialise, fb_authenticate, fb_onAuthStateChanged, fb_signOut, fb_writeRecord, fb_readRecord, fb_readAll, fb_destroy, fb_updateRecord
 };
 
 function fb_test() {
@@ -102,7 +103,7 @@ function fb_authenticate() {
         console.log(result.user.displayName);
         userUID = result.user.uid;
       //  const userEmail = result.user.email;
-      //  const userName = result.user.displayName;
+         userName = result.user.displayName;
     }).catch((error) => {
         console.log("error authenticating: " + error);
        // document.getElementById("p_fbAuthenticate").innerHTML = "Failled Authenticating";
@@ -150,8 +151,9 @@ function fb_signOut() {
     });
 }
 function fb_writeRecord() {
-    const dbReference= ref(fb_gamedb, "Games/FarLands/${userName}");
-    set(dbReference, {Name: "bobby", Score: 3}).then(() => {
+    const dbReference= ref(fb_gamedb, ('Games/FarLands/Users/'+ userName));
+
+    set(dbReference, { Score: 3, UID: userUID}).then(() => {
         document.getElementById("p_fbWriteRec").innerHTML = "Successful";
 
     }).catch((error) => {
@@ -159,6 +161,7 @@ function fb_writeRecord() {
         document.getElementById("p_fbWriteRec").innerHTML = "Successful";
 
     });
+    
 }
 function fb_readRecord() {
     const dbReference= ref(fb_gamedb, "Games/FarLands/Users/Score");
@@ -199,16 +202,14 @@ function fb_readAll() {
     });
 }
 function fb_updateRecord() {
-     const dbReference= ref(fb_gamedb, where-to-write-to);
+     const dbReference= ref(fb_gamedb, "Games/FarLands/Users/" + userName);
 
-    update(dbReference, _data).then(() => {
-
-    //    ✅ Code for a successful update goes here
+    update(dbReference, {Score: 2}).then(() => {
+    document.getElementById("p_fbUpdateRec").innerHTML = "UPDATE SUCCESSFUL";
+    
 
     }).catch((error) => {
-
- //       ❌ Code for a update error goes here
-
+        console.log("error  " + error)
     });
 }
 function fb_destroy() {
